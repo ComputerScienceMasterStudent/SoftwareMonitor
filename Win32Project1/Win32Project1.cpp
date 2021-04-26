@@ -198,7 +198,7 @@ void				  ReadExportTableList(BYTE * file, DWORD vraOffset, DWORD codeOffset, in
 string				  GetPathFromPIDL(DWORD pidl);
 //Strings
 LPWSTR				  CopyWString(const wchar_t* str);
-void				  GetClipboardData();
+std::string			  GetClipboardString();
 //Unexpected exception
 void				  myunexpected(){}
 
@@ -1640,16 +1640,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	int         eventId=0;
 	PAINTSTRUCT ps;
 	HDC			hdc;
+	wchar_t     buffer[2 * MAX_PATH];
+
 
 	switch (message)
 	{
 		//clipboard content changed
 	case WM_CLIPBOARDUPDATE:
-		GetClipboardData();
-		if (!clipboardText.empty())
-			wprintf_s(L"clipboard content updated. text is: \"%s\"\n", clipboardText.c_str());
-		else if (!clipboardFileName.empty())
-			wprintf_s(L"clipboard content updated. file name is: \"%s\"\n", clipboardFileName.c_str());
+		wsprintf(buffer, L"clipboard content updated. text is: %S", GetClipboardString().c_str());
+		OutputDebugString(buffer);
 		break;
 		//Initialize menu
 	case WM_INITMENU:
@@ -2549,49 +2548,31 @@ void GetVersionInfo(wchar_t* filename)
 }
 
 
-
-
-
 /*
-/* Function: GetClipboardData
+/* Function: GetClipboardString
 /* Get Clipboard Text
 /* input:	none
-/* returns: none
+/* returns: clipboard's text
 */
-void GetClipboardData()
+std::string GetClipboardString()
 {
-	clipboardText		 = _T("");
-	clipboardFileName    = _T("");
-	if (!OpenClipboard(0))
-		return;
-
-	HANDLE hData = GetClipboardData(CF_UNICODETEXT);
-	if (!hData)
+	std::string string;
+	if (OpenClipboard(nullptr))
 	{
-		TCHAR   fileName[MAX_PATH];
-		HGLOBAL hGlobal = (HGLOBAL)GetClipboardData(CF_HDROP);
-		if (hGlobal)
+		HANDLE hData = GetClipboardData(CF_TEXT);
+		if (hData)
 		{
-			HDROP hDrop = (HDROP)GlobalLock(hGlobal);
-			if (hDrop)
+			// Lock the handle to get the actual text pointer
+			char* pszText = static_cast<char*>(GlobalLock(hData));
+			if (pszText)
 			{
-				DragQueryFile(hDrop, 0, fileName, MAX_PATH);
-				GlobalUnlock(hGlobal);
+				string = pszText;
 			}
+			GlobalUnlock(hData);
 		}
 		CloseClipboard();
-		clipboardFileName = fileName;
 	}
-	else
-	{
-		wchar_t * text = (wchar_t*)(GlobalLock(hData));
-		if (text)
-		{
-			clipboardText = text;
-		}
-		GlobalUnlock(hData);
-		CloseClipboard();
-	}
+	return string;
 }
 
 
