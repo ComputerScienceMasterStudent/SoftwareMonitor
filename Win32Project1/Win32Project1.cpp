@@ -28,6 +28,7 @@ using namespace std;
 #pragma comment(lib, "version.lib") //version information 
 #pragma comment(lib, "shell32.lib") //shell notifications
 #pragma comment(lib, "wbemuuid.lib")//WMI 
+#pragma warning( disable : 4302 )
 
 
 #define MAX_LOADSTRING 100
