@@ -2482,8 +2482,16 @@ void EnableMenuItems()
 	}
 	else
 	{
-		EnableMenuItem(hMenu, IDM_RESUME, MF_BYCOMMAND | MF_ENABLED);
-		EnableMenuItem(hMenu, IDM_SUSPEND, MF_BYCOMMAND | MF_ENABLED);
+		if (processStatus == SUSPENDED)
+		{
+			EnableMenuItem(hMenu, IDM_RESUME, MF_BYCOMMAND | MF_ENABLED);
+			EnableMenuItem(hMenu, IDM_SUSPEND, MF_BYCOMMAND | MF_DISABLED);
+		}
+		else
+		{
+			EnableMenuItem(hMenu, IDM_SUSPEND, MF_BYCOMMAND | MF_ENABLED);
+			EnableMenuItem(hMenu, IDM_RESUME, MF_BYCOMMAND | MF_DISABLED);
+		}
 		EnableMenuItem(hMenu, IDM_CLOSE, MF_BYCOMMAND | MF_ENABLED);
 		EnableMenuItem(hMenu, IDM_FOLDER, MF_BYCOMMAND | MF_ENABLED);
 		EnableMenuItem(hMenu, IDM_OPENPROCESS, MF_BYCOMMAND | MF_ENABLED);
