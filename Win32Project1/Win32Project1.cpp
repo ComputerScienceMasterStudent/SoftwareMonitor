@@ -1641,13 +1641,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	PAINTSTRUCT ps;
 	HDC			hdc;
 	wchar_t     buffer[2 * MAX_PATH];
-
+	std::string clipboardStr;
 
 	switch (message)
 	{
 		//clipboard content changed
 	case WM_CLIPBOARDUPDATE:
-		wsprintf(buffer, L"clipboard content updated. text is: %S", GetClipboardString().c_str());
+		clipboardStr = GetClipboardString();
+		if(!clipboardStr.empty())
+			wsprintf(buffer, L"clipboard content updated. text is: %S", clipboardStr.c_str());
+		else
+			wsprintf(buffer, L"clipboard content updated. file/\s were copied");
 		OutputDebugString(buffer);
 		break;
 		//Initialize menu
