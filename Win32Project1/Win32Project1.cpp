@@ -1651,7 +1651,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		if(!clipboardStr.empty())
 			wsprintf(buffer, L"clipboard content updated. text is: %S", clipboardStr.c_str());
 		else
-			wsprintf(buffer, L"clipboard content updated. file/\s were copied");
+			wsprintf(buffer, L"clipboard content updated. file\\s were copied");
 		OutputDebugString(buffer);
 		break;
 		//Initialize menu
