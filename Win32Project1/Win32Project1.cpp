@@ -17,6 +17,7 @@
 #include <mutex>
 #include <io.h>  
 #include <fcntl.h>
+#include <thread>
 using namespace std;
 #define _WIN32_DCOM
 #include <comdef.h>
@@ -31,9 +32,7 @@ using namespace std;
 #pragma warning( disable : 4302 )
 
 
-#define MAX_LOADSTRING 100
-
-#define WM_FILESYSTEM_CHANGED_MSG (WM_USER+100)
+#define MAX_LOADSTRING		100
 #define CONSOLE_TITLE		_T("Software Monitor Log")
 #define RUNNING				"running"  
 #define SUSPENDED			"suspended" 
@@ -198,9 +197,10 @@ void				  ReadExportTableList(BYTE * file, DWORD vraOffset, DWORD codeOffset, in
 string				  GetPathFromPIDL(DWORD pidl);
 //Strings
 LPWSTR				  CopyWString(const wchar_t* str);
-std::string			  GetClipboardString();
+string				  GetClipboardString();
 //Unexpected exception
 void				  myunexpected(){}
+
 
 
 /*
@@ -460,8 +460,8 @@ BOOL CRessourceLoader::EnumNames(HANDLE hModule, wchar_t* lpType, wchar_t* lpNam
 				const BYTE *pResource = (const BYTE *)LockResource(hResData);
 				if (pResource)
 				{
-					std::string assemblyIdentity;
-					std::string input = (char*)pResource;
+					string assemblyIdentity;
+					string input = (char*)pResource;
 
 					const char* str = strstr(input.c_str(), "requireAdministrator");
 					if (str)
@@ -1524,7 +1524,6 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	}
 	
 	RegisterFileSystemChanges();
-
 	// Main message loop:
 	while (GetMessage(&msg, NULL, 0, 0))
 	{
@@ -1560,7 +1559,6 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 
 	//Uninitialize OLE
 	OleUninitialize();
-
 
 	return (int) msg.wParam;
 }
@@ -1614,9 +1612,6 @@ BOOL InitApp(HINSTANCE hInstance, int nCmdShow)
    {
       return FALSE;
    }
-   //Transparent window
-//   SetWindowLong(ghWnd, GWL_EXSTYLE, GetWindowLong(ghWnd, GWL_EXSTYLE) | WS_EX_LAYERED);
-  // SetLayeredWindowAttributes(ghWnd, RGB(255, 255, 255), 50, LWA_ALPHA|LWA_COLORKEY);
    ShowWindow(ghWnd, nCmdShow);
    //Display window
    UpdateWindow(ghWnd);
@@ -1706,7 +1701,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		if (bLeftButtonDown)
 		{
 			SetCapture(ghWnd);
-			//SetCursor((HCURSOR)LoadCursor(NULL, IDC_CROSS));
 			SetCursor((HCURSOR)LoadCursor(hInst, MAKEINTRESOURCE(IDC_MAG_GLASS)));
 		}
 		else
